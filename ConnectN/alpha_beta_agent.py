@@ -27,7 +27,15 @@ class AlphaBetaAgent(agent.Agent):
     def go(self, brd):
         """Search for the best move (choice of column for the token)"""
         # Your code here
-        v, a = self.maxvalue(brd, 1000000, -100000, 0)
+        v = 0
+        a = 0
+        self.enemy = 0
+        if self.player == 1:
+            self.enemy = 2
+            v, a = self.maxvalue(brd, 1000000, -100000, 0)
+        else:
+            self.enemy = 1
+            v, a = self.minvalue(brd, 1000000, -100000, 0)
         # v = self.maxvalue(brd, 1000000, -100000)
         print(v)
         #for state in self.get_successors(brd):
@@ -60,7 +68,7 @@ class AlphaBetaAgent(agent.Agent):
     def minvalue(self, board, alpha, beta, a):
         alp = alpha
         bet = beta
-        if board.get_outcome() == self.player:
+        if board.get_outcome() == self.enemy:
             #print("Outcome found (min)")
             return evaluation.Evaluation(board, self).evaluate(), a
         v = 1000000
