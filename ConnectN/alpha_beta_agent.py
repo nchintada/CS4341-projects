@@ -1,5 +1,6 @@
 import math
 import agent
+import evaluation
 
 ###########################
 # Alpha-Beta Search Agent #
@@ -26,6 +27,52 @@ class AlphaBetaAgent(agent.Agent):
     def go(self, brd):
         """Search for the best move (choice of column for the token)"""
         # Your code here
+        v, a = self.maxvalue(brd, 1000000, -100000, 0)
+        # v = self.maxvalue(brd, 1000000, -100000)
+        print(v)
+        #for state in self.get_successors(brd):
+        #    print(state)
+        #    if v == evaluation.Evaluation(state[0], self).evaluate():
+        #        return state[1]
+        #return -1
+        return a
+
+
+    def maxvalue(self, board, alpha, beta, a):
+        alp = alpha
+        bet = beta
+        if board.get_outcome() == self.player:
+            #print("Outcome found (max)")
+            return evaluation.Evaluation(board, self).evaluate(), a
+        v = -1000000
+        for a in self.get_successors(board):
+            val, act = self.minvalue(a[0], alp, bet, a[1])
+            v = max(v, val)
+            if v >= bet:
+                #print("Max val 1:" + str(v))
+                return v, a[1]
+            alp = max(alp, v)
+        #print("Max val 2:" + str(v))
+        return v, a
+
+
+
+    def minvalue(self, board, alpha, beta, a):
+        alp = alpha
+        bet = beta
+        if board.get_outcome() == self.player:
+            #print("Outcome found (min)")
+            return evaluation.Evaluation(board, self).evaluate(), a
+        v = 1000000
+        for a in self.get_successors(board):
+            val, act = self.maxvalue(a[0], alp, bet, a[1])
+            v = min(v, val)
+            if v <= alp:
+                #print("Min val 1:" + str(v))
+                return v, a[1]
+            bet = min(bet, v)
+        #print("Min val 2:" + str(v))
+        return v, a
 
     # Get the successors of the given board.
     #
