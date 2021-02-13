@@ -10,15 +10,18 @@ class Evaluation(object):
 
 
     def calc_center_value(self):
-        middlex = self.width / 2
-        dif = abs(middlex - self.xpos)
-        base_weight = self.width - dif
+        weight = 0
+        middlex = int(self.width / 2)
+        for y in range(0, self.height):
+            if self.board.board[y][middlex] == self.agent.player:
+                weight += self.width - y
 
-        max_moves = self.width * self.height
-        moves_remaining = max_moves - self.moves
+
+        #max_moves = self.width * self.height
+        #moves_remaining = max_moves - self.moves
         #this next line should probably be modified to make sure it does not interfere with other parts of the heuristic
-        balanced_moves_remaining = moves_remaining / middlex
-        weight = balanced_moves_remaining + base_weight
+        #balanced_moves_remaining = moves_remaining / middlex
+        #weight = balanced_moves_remaining + base_weight
 
         return weight
 
@@ -26,7 +29,7 @@ class Evaluation(object):
         if self.board.get_outcome() == self.agent.player:
             return 1000
         else:
-            return 1
+            return self.calc_center_value()
 
 
 
