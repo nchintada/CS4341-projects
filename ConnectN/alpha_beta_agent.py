@@ -61,7 +61,7 @@ class AlphaBetaAgent(agent.Agent):
                 return v, a[1]
             alp = max(alp, v)
         #print("Max val 2:" + str(v))
-        return v, a
+        return v, a[1]
 
 
 
@@ -80,7 +80,7 @@ class AlphaBetaAgent(agent.Agent):
                 return v, a[1]
             bet = min(bet, v)
         #print("Min val 2:" + str(v))
-        return v, a
+        return v, a[1]
 
     # Get the successors of the given board.
     #
