@@ -16,14 +16,18 @@ class Evaluation(object):
 
     def calc_center_value(self):
         weight = 0
-        middlex = 1
+        middlex = int(self.width / 2)
         #dif = abs(middlex - self.action)
         #base_weight = self.width - dif
         base_weight = 0
-        if self.board.board[0][3] == self.agent.player:
-            base_weight += 5000
-        #if self.action == 0 or self.action == 1 or self.action == 2 or self.action == 4 or self.action == 5 or self.action == 6:
-        #    base_weight = -100000
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board.board[y][x] == self.agent.player:
+                    base_weight += (-(y+1) * 2) + (((middlex - (abs(middlex - x))) + 1) * 50)
+                #if self.board.board[y][x] == self.enemy:
+                #    base_weight -= ((self.height - y) * 5) + ((middlex - (abs(middlex - x))) * 30)
+
+
 
         print("Weight: " + str(base_weight))
 
