@@ -4,7 +4,7 @@ import agent
 import alpha_beta_agent as aba
 
 # Set random seed for reproducibility
-random.seed(11238)
+random.seed(19535324)
 
 #
 # Random vs. Random
@@ -63,4 +63,4 @@ g3 = game.Game(7, # width
 #               agent.InteractiveAgent("human2"))   # player 2
 
 # Execute the game
-outcome = g3.go()
+outcome = g.go()
