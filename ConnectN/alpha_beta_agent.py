@@ -47,40 +47,34 @@ class AlphaBetaAgent(agent.Agent):
 
 
     def maxvalue(self, board, alpha, beta, a, d):
-        alp = alpha
-        bet = beta
         score = evaluation.Evaluation(board, self).score()
-        if board.get_outcome() == self.player or d == self.max_depth:
-            #print("Outcome found (max)")
+        if board.get_outcome() != 0 or d == self.max_depth: # original condition: board.get_outcome() == self.player
             return score, a
         v = -1000000
         for a in self.get_successors(board):
-            val, act = self.minvalue(a[0], alp, bet, a[1], d+1)
+            val, act = self.minvalue(a[0], alpha, beta, a[1], d+1)
             v = max(v, val)
-            if v >= bet:
+            if v >= beta:
                 #print("Max val 1:" + str(v))
                 return v, a[1]
-            alp = max(alp, v)
+            alpha = max(alpha, v)
         #print("Max val 2:" + str(v))
         return v, a
 
 
 
     def minvalue(self, board, alpha, beta, a, d):
-        alp = alpha
-        bet = beta
         score = evaluation.Evaluation(board, self).score()
-        if board.get_outcome() == self.enemy or d == self.max_depth:
-            #print("Outcome found (min)")
+        if board.get_outcome() != 0 or d == self.max_depth:
             return score, a
         v = 1000000
         for a in self.get_successors(board):
-            val, act = self.maxvalue(a[0], alp, bet, a[1], d+1)
+            val, act = self.maxvalue(a[0], alpha, beta, a[1], d+1)
             v = min(v, val)
-            if v <= alp:
+            if v <= alpha:
                 #print("Min val 1:" + str(v))
                 return v, a[1]
-            bet = min(bet, v)
+            beta = min(beta, v)
         #print("Min val 2:" + str(v))
         return v, a
 

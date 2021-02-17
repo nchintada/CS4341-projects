@@ -33,13 +33,40 @@ class Evaluation(object):
     def score(self):
         # Cycle through all the spaces with tokens and score them
         score = 0
-        for i in range(0, self.width):
-            for j in range(0, self.height):
-                midweight = 3 - abs(self.width/2 - i)
-                if self.board.board[j][i] == self.agent.player:
-                    score += midweight
-                if self.board.board[j][i] == self.agent.enemy:
-                    score -= midweight
+        # for i in range(0, self.width):
+        #     for j in range(0, self.height):
+        #         midweight = 3 - abs(self.width/2 - i)
+        #         if self.board.board[j][i] == self.agent.player:
+        #             score += midweight
+        #         if self.board.board[j][i] == self.agent.enemy:
+        #             score -= midweight
+        # Go for center
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board.board[y][x] == self.agent.player:
+                    score += (-(y + 1) * 2) + (((self.width / 2) - (abs((self.width / 2) - x))) + 1) * 50
+        # Check vertical
+        # for i in range(0, self.width - 3):
+        #     for j in range(0, self.height):
+        #         if self.board.board[j][i] == self.agent.player:
+        #             score += 1
+        # # Check horizontal
+        # for i in range(0, self.width):
+        #     for j in range(0, self.height - 3):
+        #         if self.board.board[j][i] == self.agent.player:
+        #             score += 1
+        # # Check diagonal
+        # for i in range(0, self.width - 3):
+        #     for j in range(0, self.height - 3):
+        #         if self.board.board[j][i] == self.agent.player:
+        #             score += 1
+        # # Check diagonal 2
+        # for i in range(3, self.width):
+        #     for j in range(0, self.height - 4):
+        #         if self.board.board[j][i] == self.agent.player:
+        #             score += 1
+        # Finalize score
+        print("Score: " + str(score))
         return score
 
 
