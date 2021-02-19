@@ -67,6 +67,10 @@ class Evaluation(object):
         #             score += 1
         # Finalize score
         # print("Score: " + str(score))
+        if self.board.get_outcome() == self.agent.player:
+            score += 1000
+        if self.board.get_outcome() == self.agent.enemy:
+            score -= 1000
         return score
 
 
