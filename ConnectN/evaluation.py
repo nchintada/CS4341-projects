@@ -66,7 +66,7 @@ class Evaluation(object):
         #         if self.board.board[j][i] == self.agent.player:
         #             score += 1
         # Finalize score
-        print("Score: " + str(score))
+        # print("Score: " + str(score))
         return score
 
 
