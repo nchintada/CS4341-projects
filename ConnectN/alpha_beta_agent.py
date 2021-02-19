@@ -32,70 +32,54 @@ class AlphaBetaAgent(agent.Agent):
         self.enemy = 0
         if self.player == 1:
             self.enemy = 2
-            v, a = self.maxvalue(brd, -math.inf, math.inf, 0)
+            v, a = self.maxvalue(brd, -1000000, 100000, 0, 0)
         else:
             self.enemy = 1
-            v, a = self.maxvalue(brd, -math.inf, math.inf, 0)
-
+            v, a = self.maxvalue(brd, -1000000, 100000, 0, 0)
+        # v = self.maxvalue(brd, 1000000, -100000)
         print(v)
+        #for state in self.get_successors(brd):
+        #    print(state)
+        #    if v == evaluation.Evaluation(state[0], self).evaluate():
+        #        return state[1]
+        #return -1
         return a
 
 
-    def maxvalue(self, board, alpha, beta, d):
-        alp = alpha
-        bet = beta
-        if board.get_outcome() == self.player:
-            #print("Outcome found (max)")
-            return 1000, -1
-        elif board.get_outcome() == self.enemy:
-            #print("Outcome found (max)")
-            return -1000, -1
-        if d == self.max_depth:
-            print("do we get to depth?")
-            return evaluation.Evaluation(board, self).evaluate(), -1
-        v = -math.inf
-        act = 0
+    def maxvalue(self, board, alpha, beta, a, d):
+        # score = evaluation.Evaluation(board, self).score()
+        if board.get_outcome() != 0 or d == self.max_depth: # original condition: board.get_outcome() == self.player
+            return evaluation.Evaluation(board, self).score(), a
+        v = -1000000
+        action = 0
         for a in self.get_successors(board):
-            print("Exploring max: ", a[1])
-            val = self.minvalue(a[0], alp, bet, d+1)
-            print("Value after min: " + str(val))
-            print("Beta: " + str(bet))
-            if val >= v:
+            val = self.minvalue(a[0], alpha, beta, a[1], d+1)
+            if val > v:
                 v = val
-                act = a[1]
-            alp = max(alp, v)
-            if v >= bet:
+                action = a[1]
+            #v = max(v, val)
+            if v >= beta:
                 print("Max val 1:" + str(v))
                 return v, a[1]
+            alpha = max(alpha, v)
         print("Max val 2:" + str(v))
-        return v, act
+        return v, action
 
 
 
-    def minvalue(self, board, alpha, beta, d):
-        alp = alpha
-        bet = beta
-        if board.get_outcome() == self.player:
-            # print("Outcome found (max)")
-            return 1000
-        if board.get_outcome() == self.enemy:
-            # print("Outcome found (max)")
-            return -1000
-        if d == self.max_depth:
-            print("do we get to depth?")
-            return evaluation.Evaluation(board, self).evaluate()
-        v = math.inf
+    def minvalue(self, board, alpha, beta, a, d):
+        # score = evaluation.Evaluation(board, self).score()
+        if board.get_outcome() != 0 or d == self.max_depth:
+            return evaluation.Evaluation(board, self).score()
+        v = 1000000
         for a in self.get_successors(board):
-            print("Exploring min: ", a[1])
-            val, act = self.maxvalue(a[0], alp, bet, d+1)
-            print("Value after max: " + str(val))
-            print("Alpha: " + str(alp))
+            val, act = self.maxvalue(a[0], alpha, beta, a[1], d+1)
             v = min(v, val)
-            bet = min(bet, v)
-            if v <= alp:
-                print("Min val 1:" + str(v))
+            if v <= alpha:
+                #print("Min val 1:" + str(v))
                 return v
-        print("Min val 2:" + str(v))
+            beta = min(beta, v)
+        #print("Min val 2:" + str(v))
         return v
 
     # Get the successors of the given board.
@@ -122,3 +106,6 @@ class AlphaBetaAgent(agent.Agent):
             # Add board to list of successors
             succ.append((nb,col))
         return succ
+
+
+THE_AGENT = AlphaBetaAgent("Group10", 4)
