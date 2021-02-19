@@ -63,4 +63,4 @@ g3 = game.Game(7, # width
 #               agent.InteractiveAgent("human2"))   # player 2
 
 # Execute the game
-outcome = g.go()
+outcome = g3.go()
