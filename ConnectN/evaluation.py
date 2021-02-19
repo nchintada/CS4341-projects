@@ -76,6 +76,8 @@ class Evaluation(object):
                 self.is_line_at(x, y, 1, 1, d) or  # Diagonal up
                 self.is_line_at(x, y, 1, -1, d))  # Diagonal down
 
+
+    #this is not blocking at all and never will the way it is set up, i need to re-evaluate this function
     def calc_block(self):
         weight = 0
         for y in range(self.height):
