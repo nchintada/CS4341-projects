@@ -1,7 +1,7 @@
 import random
 import game
 import agent
-import alpha_beta_agent as aba
+from Group10 import alpha_beta_agent as aba
 
 # Set random seed for reproducibility
 random.seed(11889)
@@ -18,58 +18,49 @@ random.seed(11889)
 #
 # Human vs. Random
 #
-g1 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              agent.InteractiveAgent("human"),    # player 1
-              agent.RandomAgent("random"))        # player 2
+# g = game.Game(7, # width
+#               6, # height
+#               4, # tokens in a row to win
+#               agent.InteractiveAgent("human"),    # player 1
+#               agent.RandomAgent("random"))        # player 2
 
 #
 # Random vs. AlphaBeta
 #
-g2 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              agent.RandomAgent("random"),  # player 1
-              aba.AlphaBetaAgent("alphabeta", 4)) # player 2
+# g = game.Game(7, # width
+#               6, # height
+#               4, # tokens in a row to win
+#               agent.RandomAgent("random"),  # player 1
+#               aba.AlphaBetaAgent("alphabeta", 4)) # player 2
 
 
 # AlphaBeta vs Random
 #
-g3 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              aba.AlphaBetaAgent("alphabeta", 4), # player 1
-              agent.RandomAgent("random"))  # player 2
+# g2 = game.Game(7, # width
+#               6, # height
+#               4, # tokens in a row to win
+#               aba.AlphaBetaAgent("alphabeta", 4), # player 1
+#               agent.RandomAgent("random"))  # player 2
 
 
 
 #
 # Human vs. AlphaBeta
 #
-g4 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              agent.InteractiveAgent("human"),    # player 1
+g = game.Game(7,  # width
+              6,  # height
+              4,  # tokens in a row to win
+              agent.InteractiveAgent("human"),  # player 1
               aba.AlphaBetaAgent("alphabeta", 4)) # player 2
 
 #
 # Human vs. Human
 #
-g5 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              agent.InteractiveAgent("human1"),   # player 1
-              agent.InteractiveAgent("human2"))   # player 2
-
-#
-# AlphaBeta vs. AlphaBeta
-#
-g6 = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              aba.AlphaBetaAgent("alphabeta1", 1),    # player 1
-              aba.AlphaBetaAgent("alphabeta2", 4)) # player 2
+# g = game.Game(7, # width
+#               6, # height
+#               4, # tokens in a row to win
+#               agent.InteractiveAgent("human1"),   # player 1
+#               agent.InteractiveAgent("human2"))   # player 2
 
 # Execute the game
-outcome = g6.go()
+outcome = g.go()
