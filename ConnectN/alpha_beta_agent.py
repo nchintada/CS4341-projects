@@ -59,10 +59,10 @@ class AlphaBetaAgent(agent.Agent):
                 action = a[1]
             #v = max(v, val)
             if v >= beta:
-                print("Max val 1:" + str(v))
+                # print("Max val 1:" + str(v))
                 return v, a[1]
             alpha = max(alpha, v)
-        print("Max val 2:" + str(v))
+        # print("Max val 2:" + str(v))
         return v, action
 
 
