@@ -32,10 +32,10 @@ class AlphaBetaAgent(agent.Agent):
         self.enemy = 0
         if self.player == 1:
             self.enemy = 2
-            v, a = self.maxvalue(brd, -1000000, 100000, 0, 0)
+            v, a = self.maxvalue(brd, -math.inf, math.inf, 0, 0)
         else:
             self.enemy = 1
-            v, a = self.maxvalue(brd, -1000000, 100000, 0, 0)
+            v, a = self.maxvalue(brd, -math.inf, math.inf, 0, 0)
         # v = self.maxvalue(brd, 1000000, -100000)
         print(v)
         #for state in self.get_successors(brd):
@@ -50,7 +50,7 @@ class AlphaBetaAgent(agent.Agent):
         # score = evaluation.Evaluation(board, self).score()
         if board.get_outcome() != 0 or d == self.max_depth: # original condition: board.get_outcome() == self.player
             return evaluation.Evaluation(board, self).score(), a
-        v = -1000000
+        v = -math.inf
         action = 0
         for a in self.get_successors(board):
             val = self.minvalue(a[0], alpha, beta, a[1], d+1)
@@ -59,10 +59,10 @@ class AlphaBetaAgent(agent.Agent):
                 action = a[1]
             #v = max(v, val)
             if v >= beta:
-                print("Max val 1:" + str(v))
+                #print("Max val 1:" + str(v))
                 return v, a[1]
             alpha = max(alpha, v)
-        print("Max val 2:" + str(v))
+        #print("Max val 2:" + str(v))
         return v, action
 
 
@@ -71,7 +71,7 @@ class AlphaBetaAgent(agent.Agent):
         # score = evaluation.Evaluation(board, self).score()
         if board.get_outcome() != 0 or d == self.max_depth:
             return evaluation.Evaluation(board, self).score()
-        v = 1000000
+        v = math.inf
         for a in self.get_successors(board):
             val, act = self.maxvalue(a[0], alpha, beta, a[1], d+1)
             v = min(v, val)
