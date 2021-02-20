@@ -7,7 +7,7 @@ class Evaluation(object):
         self.width = board.w
         self.height = board.h
         self.agent = agent
-
+        self.n = board.n
 
     # def calc_center_value(self):
     #     # middlex = self.width / 2
@@ -87,7 +87,7 @@ class Evaluation(object):
                     seq = 0
                     startToken = self.board.board[x][y]
                     if startToken == 0: break  # Not a player
-                    for i in range(0, 2):  # Check in direction (dy, dx)
+                    for i in range(0, self.n-2):  # Check in direction (dy, dx)
                         xpos = xpos + dx
                         ypos = ypos + dy
                         if xpos >= self.height or ypos >= self.width: break  # Out of bounds
@@ -114,7 +114,7 @@ class Evaluation(object):
                     seq = 0
                     startToken = self.board.board[x][y]
                     if startToken == 0: break  # Not a player
-                    for i in range(0, 3):  # Check in direction (dy, dx)
+                    for i in range(0, self.n - 1):  # Check in direction (dy, dx)
                         xpos = xpos + dx
                         ypos = ypos + dy
                         if xpos >= self.height or ypos >= self.width: break  # Out of bounds
@@ -124,7 +124,7 @@ class Evaluation(object):
                                 seq = seq + 1
                         else:
                             break
-                    if seq >= 2:
+                    if seq >= self.n - 2:
                         if startToken == self.agent.player:
                             currPlayerPoints = currPlayerPoints + 1
                         else:
