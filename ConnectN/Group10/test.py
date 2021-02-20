@@ -1,7 +1,7 @@
 import random
 import game
 import agent
-import alpha_beta_agent as aba
+from Group10 import alpha_beta_agent as aba
 
 
 def run_test_suite(ABPlayer, depth, time, x, y, n):
@@ -43,4 +43,4 @@ def run_test_suite(ABPlayer, depth, time, x, y, n):
         print("Game " + str(i) + " complete")
     print("AlphaBeta won " + str(AlphaBetaVictories) + " out of " + str(max))
 
-run_test_suite(2, 6, 15, 8, 10, 5)
+run_test_suite(2, 5, 15, 8, 10, 5)

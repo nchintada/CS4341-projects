@@ -1,5 +1,4 @@
 import board
-import agent
 import time
 from pathlib import Path
 

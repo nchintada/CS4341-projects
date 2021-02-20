@@ -1,6 +1,7 @@
 import math
 import agent
-import evaluation
+from . import evaluation
+
 
 ###########################
 # Alpha-Beta Search Agent #

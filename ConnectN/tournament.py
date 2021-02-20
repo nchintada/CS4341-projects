@@ -1,7 +1,7 @@
 import random
 import game
 import agent
-import alpha_beta_agent as aba
+
 
 ######################
 # Play a single game #
@@ -19,7 +19,7 @@ def play_game(w, h, n, l, p1, p2):
     g = game.Game(w,  # width
                   h,  # height
                   n,  # tokens in a row to win
-                  p1, # player 1
+                  p1,  # player 1
                   p2) # player 2
     o = g.timed_go(l)
     print("    GAME:", p1.name, "vs.", p2.name, ": ", end='')

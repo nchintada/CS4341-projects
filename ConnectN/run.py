@@ -1,8 +1,6 @@
-import random
 import game
 import agent
-import alpha_beta_agent as aba
-from . import test
+from Group10 import alpha_beta_agent as aba
 
 # Set random seed for reproducibility
 #random.seed(11879)
@@ -48,10 +46,10 @@ from . import test
 #
 # Human vs. AlphaBeta
 #
-g = game.Game(7, # width
-              6, # height
-              4, # tokens in a row to win
-              agent.InteractiveAgent("human"),    # player 1
+g = game.Game(7,  # width
+              6,  # height
+              4,  # tokens in a row to win
+              agent.InteractiveAgent("human"),  # player 1
               aba.AlphaBetaAgent("alphabeta", 4)) # player 2
 
 #
