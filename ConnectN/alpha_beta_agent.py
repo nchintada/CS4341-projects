@@ -37,7 +37,7 @@ class AlphaBetaAgent(agent.Agent):
             self.enemy = 1
             v, a = self.maxvalue(brd, -math.inf, math.inf, 0, 0)
         # v = self.maxvalue(brd, 1000000, -100000)
-        print(v)
+        #print(v)
         #for state in self.get_successors(brd):
         #    print(state)
         #    if v == evaluation.Evaluation(state[0], self).evaluate():

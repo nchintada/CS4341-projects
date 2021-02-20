@@ -67,12 +67,12 @@ class Evaluation(object):
         #             score += 1
         # Finalize score
         # print("Score: " + str(score))
-        score += 100 * self.find_three_of_four()[0]
-        score += -100 * self.find_three_of_four()[1]
+        #score += 100 * self.find_connect_3()[0]
+        #score += -100 * self.find_connect_3()[1]
         if self.board.get_outcome() == self.agent.player:
-            score += 10000
+            score += 1000
         if self.board.get_outcome() == self.agent.enemy:
-            score -= -10000
+            score -= 1000
         return score
 
     def find_connect_3(self):
@@ -99,7 +99,7 @@ class Evaluation(object):
                             currPlayerPoints = currPlayerPoints + 1
                         else:
                             enemy_player_points = enemy_player_points + 1
-        print(currPlayerPoints, enemy_player_points)
+        #print(currPlayerPoints, enemy_player_points)
         return currPlayerPoints, enemy_player_points
 
     def find_three_of_four(self):
@@ -143,7 +143,7 @@ class Evaluation(object):
                 empty_spaces = empty_spaces + 1
             else:
                 break
-        print(empty_spaces)
+        #print(empty_spaces)
         if (empty_spaces % 2 == 0): return 0
         return 1
 
