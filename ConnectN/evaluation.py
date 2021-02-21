@@ -72,7 +72,7 @@ class Evaluation(object):
         if self.board.get_outcome() == self.agent.player:
             score += 10000
         if self.board.get_outcome() == self.agent.enemy:
-            score -= -10000
+            score -= 10000
         return score
 
     def find_connect_3(self):
