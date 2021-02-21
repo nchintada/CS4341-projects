@@ -3,6 +3,7 @@
 ####################
 
 
+# Class used to evaluate a board in terminal and non-terminal conditions
 class Evaluation(object):
     def __init__(self, board, agent):
         self.board = board

@@ -27,10 +27,10 @@ class AlphaBetaAgent(agent.Agent):
     # NOTE: make sure the column is legal, or you'll lose the game.
     def go(self, brd):
         """Search for the best move (choice of column for the token)"""
-        # Your code here
         v = 0
         a = 0
         self.enemy = 0
+        # Handles whether agent is player 1 or 2
         if self.player == 1:
             self.enemy = 2
             v, a = self.maxvalue(brd, -math.inf, math.inf, 0, 0)
@@ -39,6 +39,8 @@ class AlphaBetaAgent(agent.Agent):
             v, a = self.maxvalue(brd, -math.inf, math.inf, 0, 0)
         return a
 
+    # Max value for Alpha-Beta Pruning
+    # Also passes up our action
     def maxvalue(self, board, alpha, beta, a, d):
         if board.get_outcome() != 0 or d == self.max_depth:
             return evaluation.Evaluation(board, self).score(), a
@@ -54,6 +56,7 @@ class AlphaBetaAgent(agent.Agent):
             alpha = max(alpha, v)
         return v, action
 
+    # Min value for Alpha-Beta Pruning
     def minvalue(self, board, alpha, beta, a, d):
         if board.get_outcome() != 0 or d == self.max_depth:
             return evaluation.Evaluation(board, self).score()
@@ -92,4 +95,4 @@ class AlphaBetaAgent(agent.Agent):
         return succ
 
 
-THE_AGENT = AlphaBetaAgent("Group10", 4)
+THE_AGENT = AlphaBetaAgent("Group10", 5)

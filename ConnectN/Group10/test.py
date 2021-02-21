@@ -4,6 +4,11 @@ import agent
 import alpha_beta_agent as aba
 
 
+##############
+# Test Class #
+##############
+
+# Test suite used for testing agent against random
 def run_test_suite(ABPlayer, depth, time, x, y, n):
     seed = 1234
     random.seed(seed)
