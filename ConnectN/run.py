@@ -1,10 +1,9 @@
-import random
 import game
 import agent
 from Group10 import alpha_beta_agent as aba
 
 # Set random seed for reproducibility
-random.seed(11889)
+#random.seed(11879)
 
 #
 # Random vs. Random
@@ -64,3 +63,8 @@ g = game.Game(7,  # width
 
 # Execute the game
 outcome = g.go()
+
+
+
+
+
