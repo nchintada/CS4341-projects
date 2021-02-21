@@ -43,6 +43,7 @@ class AlphaBetaAgent(agent.Agent):
     # Also passes up our action
     def maxvalue(self, board, alpha, beta, a, d):
         if board.get_outcome() != 0 or d == self.max_depth:
+            # Call our evaluation class and score function
             return evaluation.Evaluation(board, self).score(), a
         v = -math.inf
         action = 0
@@ -59,6 +60,7 @@ class AlphaBetaAgent(agent.Agent):
     # Min value for Alpha-Beta Pruning
     def minvalue(self, board, alpha, beta, a, d):
         if board.get_outcome() != 0 or d == self.max_depth:
+            # Call our evaluation class and score function
             return evaluation.Evaluation(board, self).score()
         v = math.inf
         for a in self.get_successors(board):
