@@ -1,7 +1,6 @@
-# CS4341-projects
+# CS4341 Connect-N
 
 The alpha_beta_agent relies on another class called evaluation.py in order to score the boards. 
 It should be imported into alpha_beta_agent itself and within the same directory.
 
-There is also an additional file called test.py that contains a test_suite with implementation for
-how our 25 games were set up and played.
+There is also an additional file called test.py that contains a test suite used to run our agent against random 25 times.
