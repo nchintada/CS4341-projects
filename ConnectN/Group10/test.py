@@ -4,6 +4,11 @@ import agent
 import alpha_beta_agent as aba
 
 
+##############
+# Test Class #
+##############
+
+# Test suite used for testing agent against random
 def run_test_suite(ABPlayer, depth, time, x, y, n):
     seed = 1234
     random.seed(seed)
@@ -43,4 +48,8 @@ def run_test_suite(ABPlayer, depth, time, x, y, n):
         print("Game " + str(i) + " complete")
     print("AlphaBeta won " + str(AlphaBetaVictories) + " out of " + str(max))
 
-run_test_suite(2, 6, 15, 8, 10, 5)
+
+# Test Connect-4
+run_test_suite(2, 5, 15, 6, 7, 4)
+# Test Connect-5
+#run_test_suite(2, 5, 15, 8, 10, 5)

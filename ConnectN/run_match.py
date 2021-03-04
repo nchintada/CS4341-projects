@@ -34,10 +34,10 @@ print(FILE_PATH, "started")
 #
 # Time to play!
 #
-g = game.Game(BOARD_WIDTH,      # width
-              BOARD_HEIGHT,     # height
-              TOKENS,           # tokens in a row to win
-              PLAYERS[PLAYER1], # player 1
+g = game.Game(BOARD_WIDTH,  # width
+              BOARD_HEIGHT,  # height
+              TOKENS,  # tokens in a row to win
+              PLAYERS[PLAYER1],  # player 1
               PLAYERS[PLAYER2]) # player 2
 g.logged_go(FILE_PATH, TIME_LIMIT)
 print(FILE_PATH, "done")
