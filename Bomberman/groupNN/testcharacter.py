@@ -5,7 +5,11 @@ sys.path.insert(0, '../bomberman')
 from entity import CharacterEntity
 from colorama import Fore, Back
 from queue import PriorityQueue
+
+
 import random
+from enum import Enum
+
 class TestCharacter(CharacterEntity):
 
     def do(self, wrld):
@@ -14,37 +18,43 @@ class TestCharacter(CharacterEntity):
         #m2 = random.randint(0, 1)
         #self.move(m1, m2)
         loc = (self.x, self.y)
-        goal = (7, 18)
+        exitBlock = (7, 18)
         #print(wrld.empty_at(goal[0], goal[1]))
-        came_from, cost_so_far = self.AStar(wrld, loc, goal)
-        print(came_from)
-        #print(cost_so_far)
-        #next_position = list(came_from.keys())[list(came_from.values()).index(loc)]
-        #next_move = self.calculateD(loc, next_position)
-        #print(next_move)
-        #print(came_from[goal])
-        #for move in list(came_from.keys()):
-        #    self.set_cell_color(move[0], move[1], Fore.RED + Back.GREEN)
-        #print(self.getNeighbors(loc, wrld))
-        #self.move(next_move[0], next_move[1])
-        path = goal
-        next = (0, 0)
-        while path != loc:
-            temp = path
-            path = came_from[path]
-            #print(path)
-            if path == loc:
-                next = temp
-                break
-        next_move = self.calculateD(loc, next)
-        print(loc)
-        print(next)
-        print(next_move)
-        self.move(next_move[0], next_move[1])
+        characterState = self.evaluateState(wrld)
+        # do expectimax
+        if characterState == state.UNSAFE:
+            
+
+        if characterState == state.SAFE:
+            came_from, cost_so_far = self.AStar(wrld, loc, exitBlock, [obstacles.EXIT])
+            #print(came_from)
+            #print(cost_so_far)
+            #next_position = list(came_from.keys())[list(came_from.values()).index(loc)]
+            #next_move = self.calculateD(loc, next_position)
+            #print(next_move)
+            #print(came_from[goal])
+            #for move in list(came_from.keys()):
+            #    self.set_cell_color(move[0], move[1], Fore.RED + Back.GREEN)
+            #print(self.getNeighbors(loc, wrld))
+            #self.move(next_move[0], next_move[1])
+            path = exitBlock
+            next = (0, 0)
+            while path != loc:
+                temp = path
+                path = came_from[path]
+                #print(path)
+                if path == loc:
+                    next = temp
+                    break
+            next_move = self.calculateD(loc, next)
+            #print(loc)
+            #print(next)
+            #print(next_move)
+            self.move(next_move[0], next_move[1])
 
 
 
-    def AStar(self, wrld, start, goal):
+    def AStar(self, wrld, start, goal, list_of_e):
         frontier = PriorityQueue()
         frontier.put(start, 0)
         came_from = {}
@@ -58,7 +68,7 @@ class TestCharacter(CharacterEntity):
             if current == goal:
                 break
 
-            for next in self.getNeighbors(current, wrld):
+            for next in self.getNeighbors(current, wrld, list_of_e):
                 new_cost = cost_so_far[current] + 1
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
@@ -78,7 +88,7 @@ class TestCharacter(CharacterEntity):
         (x2, y2) = loc2
         return ((x2 - x1), (y2 - y1))
 
-    def getNeighbors(self, loc, wrld):
+    def getNeighbors(self, loc, wrld, list_of_e):
         list_of_N = []
         for dx in [-1, 0, 1]:
             # Avoid out-of-bound indexing
@@ -90,9 +100,46 @@ class TestCharacter(CharacterEntity):
                         # Avoid out-of-bound indexing
                         if (loc[1] + dy >= 0) and (loc[1] + dy < wrld.height()):
                             # No need to check impossible moves
-                            if wrld.exit_at(loc[0] + dx, loc[1] + dy):
-                                list_of_N.append((loc[0] + dx, loc[1] + dy))
-                                break
+                            if obstacles.EXIT in list_of_e:
+                                if wrld.exit_at(loc[0] + dx, loc[1] + dy):
+                                    list_of_N.append((loc[0] + dx, loc[1] + dy))
+                                    break
+                            if obstacles.MONSTER in list_of_e:
+                                if wrld.monsters_at(loc[0] + dx, loc[1] + dy):
+                                    list_of_N.append((loc[0] + dx, loc[1] + dy))
+                                    break
                             if wrld.empty_at(loc[0] + dx, loc[1] + dy):
                                 list_of_N.append((loc[0] + dx, loc[1] + dy))
         return list_of_N
+
+
+    #Will return either safe or not safe
+    def evaluateState(self, wrld):
+        #print(wrld.monsters)
+        m = next(iter(wrld.monsters.values()))[0]
+        monster_came_from, monster_cost_so_far = self.AStar(wrld, (self.x, self.y), (m.x, m.y), [obstacles.MONSTER])
+        #print(monster_came_from)
+        #print(monster_cost_so_far)
+        counter = 0
+        path = (m.x, m.y)
+        while path != (self.x, self.y):
+            path = monster_came_from[path]
+            #print(path)
+            if path == (self.x, self.y):
+                break
+            counter += 1
+        if counter <= 4:
+            return state.UNSAFE
+        return state.SAFE
+
+
+class state(Enum):
+    SAFE = 1
+    UNSAFE = 2
+
+class obstacles(Enum):
+    EXIT = 1
+    MONSTER = 2
+    WALL = 3
+    BOMB = 4
+    EXPLOSION = 5
