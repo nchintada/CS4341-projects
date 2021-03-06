@@ -23,7 +23,7 @@ class TestCharacter(CharacterEntity):
         characterState = self.evaluateState(wrld)
         # do expectimax
         if characterState == state.UNSAFE:
-            
+
 
         if characterState == state.SAFE:
             came_from, cost_so_far = self.AStar(wrld, loc, exitBlock, [obstacles.EXIT])
