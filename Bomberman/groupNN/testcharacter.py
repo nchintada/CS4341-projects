@@ -6,7 +6,6 @@ from entity import CharacterEntity
 from colorama import Fore, Back
 from queue import PriorityQueue
 
-
 import random
 from enum import Enum
 
@@ -52,7 +51,46 @@ class TestCharacter(CharacterEntity):
             #print(next_move)
             self.move(next_move[0], next_move[1])
 
+    def expvalue(self):
 
+    # Also passes up our action
+    def maxvalue(self, wrld):
+        if self.evaluateState() == state.SAFE:
+            return self.utility(wrld)
+        v = -math.inf
+        action = 0
+        for a in self.get_successors():
+            v = self.maxvalue(v, self.expValue())
+        return v, action
+
+    def utility(self, wrld):
+        return self.monster_utility(wrld) - self.exit_utility(wrld)
+
+    def exit_utility(self, wrld):
+        e = wrld.exitcell
+        exit_came_from, exit_cost_so_far = self.AStar(wrld, (self.x, self.y), (e.x, e.y), [obstacles.EXIT])
+        counter = 0
+        path = (e.x, e.y)
+        while path != (self.x, self.y):
+            path = exit_came_from[path]
+            # print(path)
+            if path == (self.x, self.y):
+                break
+            counter += 1
+        return counter
+
+    def monster_utility(self, wrld):
+        m = next(iter(wrld.monsters.values()))[0]
+        monster_came_from, monster_cost_so_far = self.AStar(wrld, (self.x, self.y), (m.x, m.y), [obstacles.MONSTER])
+        counter = 0
+        path = (m.x, m.y)
+        while path != (self.x, self.y):
+            path = monster_came_from[path]
+            # print(path)
+            if path == (self.x, self.y):
+                break
+            counter += 1
+        return counter
 
     def AStar(self, wrld, start, goal, list_of_e):
         frontier = PriorityQueue()
