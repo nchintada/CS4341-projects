@@ -1,12 +1,17 @@
 # This is necessary to find the main code
 import sys
+
+from Bomberman.bomberman.sensed_world import SensedWorld
+
 sys.path.insert(0, '../bomberman')
 # Import necessary stuff
 from entity import CharacterEntity
 from colorama import Fore, Back
 from queue import PriorityQueue
 
+
 import random
+import math
 from enum import Enum
 
 class TestCharacter(CharacterEntity):
@@ -17,12 +22,18 @@ class TestCharacter(CharacterEntity):
         #m2 = random.randint(0, 1)
         #self.move(m1, m2)
         loc = (self.x, self.y)
+        m = next(iter(wrld.monsters.values()))
+        monster = (m[0].x, m[0].y)
         exitBlock = (7, 18)
         #print(wrld.empty_at(goal[0], goal[1]))
         characterState = self.evaluateState(wrld)
         # do expectimax
         if characterState == state.UNSAFE:
-
+            v, action = self.maxvalue(wrld, loc, 0)
+            print(action)
+            next_move = self.calculateD(loc, action)
+            print(next_move)
+            self.move(next_move[0], next_move[1])
 
         if characterState == state.SAFE:
             came_from, cost_so_far = self.AStar(wrld, loc, exitBlock, [obstacles.EXIT])
@@ -37,57 +48,110 @@ class TestCharacter(CharacterEntity):
             #print(self.getNeighbors(loc, wrld))
             #self.move(next_move[0], next_move[1])
             path = exitBlock
-            next = (0, 0)
+            next_m = (0, 0)
             while path != loc:
                 temp = path
                 path = came_from[path]
                 #print(path)
                 if path == loc:
-                    next = temp
+                    next_m = temp
                     break
-            next_move = self.calculateD(loc, next)
+            next_move = self.calculateD(loc, next_m)
             #print(loc)
             #print(next)
             #print(next_move)
             self.move(next_move[0], next_move[1])
 
-    def expvalue(self):
-
     # Also passes up our action
-    def maxvalue(self, wrld):
-        if self.evaluateState() == state.SAFE:
-            return self.utility(wrld)
+    def maxvalue(self, wrld, curr, d):
+        if self.evaluateState(wrld) == state.SAFE or d == 4:
+            print("maxvalue")
+            return self.utility(wrld), curr
+        if self.evaluateState(wrld) == state.DEAD:
+            return -10000, curr
         v = -math.inf
-        action = 0
-        for a in self.get_successors():
-            v = self.maxvalue(v, self.expValue())
+        action = (0, 0)
+        for a in self.getNeighbors(curr, wrld, [obstacles.EXIT]):
+            # v = max(v, self.expvalue(wrld, a))
+            newWrld = SensedWorld.from_world(wrld)
+            character = next(iter(newWrld.characters.values()))[0]
+            new_move = self.calculateD((character.x, character.y), (a[0], a[1]))
+            print(new_move[0], new_move[1])
+            character.move(new_move[0], new_move[1])
+            newerWrld = newWrld.next()[0]
+            val = self.expvalue(newerWrld, a, d + 1)
+            if val > v:
+                v = val
+                action = a
         return v, action
+
+    # Probably will need to call expvalue on multiple monsters but that will be handled in maxvalue
+    def expvalue(self, wrld, act, d):
+        if self.evaluateState(wrld) == state.SAFE or d == 4:
+            print("expvalue" )
+            return self.monster_utility(wrld)
+        v = 0
+        mcurr = next(iter(wrld.monsters.values()))[0]
+        possible_moves = self.getNeighbors((mcurr.x, mcurr.y), wrld, [obstacles.PLAYER])
+        for a in possible_moves:
+            p = 1.0/len(possible_moves)
+            # p←Probability(a)
+            # v←v+p·Max-value(Result(state,a))
+            # print("What are we getting? " + )
+            newWrld = SensedWorld.from_world(wrld)
+            monster = next(iter(newWrld.monsters.values()))[0]
+            new_move = self.calculateD((monster.x, monster.y), (a[0], a[1]))
+            monster.move(new_move[0], new_move[1])
+            print("Monster position before" + str(monster.x) + ' ' + str(monster.y))
+            newerWrld = newWrld.next()[0]
+            monster = next(iter(newerWrld.monsters.values()))[0]
+            print("Monster position after" + str(monster.x) + ' ' + str(monster.y))
+            print("expvalue for loop")
+            value = self.maxvalue(newerWrld, act, d+1)[0]
+            v = v + p*value
+        return v
+
+
+
 
     def utility(self, wrld):
         return self.monster_utility(wrld) - self.exit_utility(wrld)
 
     def exit_utility(self, wrld):
+        try:
+            chara = next(iter(wrld.characters.values()))
+            character = chara[0]
+        except (IndexError, StopIteration):
+            return 0
+        loc = (character.x, character.y)
         e = wrld.exitcell
-        exit_came_from, exit_cost_so_far = self.AStar(wrld, (self.x, self.y), (e.x, e.y), [obstacles.EXIT])
+        exit_came_from, exit_cost_so_far = self.AStar(wrld, loc, (e[0], e[1]), [obstacles.EXIT])
         counter = 0
-        path = (e.x, e.y)
-        while path != (self.x, self.y):
+        path = (e[0], e[1])
+        while path != loc:
             path = exit_came_from[path]
             # print(path)
-            if path == (self.x, self.y):
+            if path == loc:
                 break
             counter += 1
-        return counter
+        return counter * 2
 
     def monster_utility(self, wrld):
+        try:
+            chara = next(iter(wrld.characters.values()))
+            character = chara[0]
+        except (IndexError, StopIteration):
+            return 0
         m = next(iter(wrld.monsters.values()))[0]
-        monster_came_from, monster_cost_so_far = self.AStar(wrld, (self.x, self.y), (m.x, m.y), [obstacles.MONSTER])
+        loc = (character.x, character.y)
+        mloc = (m.x, m.y)
+        monster_came_from, monster_cost_so_far = self.AStar(wrld, loc, mloc, [obstacles.MONSTER, obstacles.PLAYER])
         counter = 0
-        path = (m.x, m.y)
-        while path != (self.x, self.y):
+        path = mloc
+        while path != loc:
             path = monster_came_from[path]
             # print(path)
-            if path == (self.x, self.y):
+            if path == loc:
                 break
             counter += 1
         return counter
@@ -146,6 +210,10 @@ class TestCharacter(CharacterEntity):
                                 if wrld.monsters_at(loc[0] + dx, loc[1] + dy):
                                     list_of_N.append((loc[0] + dx, loc[1] + dy))
                                     break
+                            if obstacles.PLAYER in list_of_e:
+                                if wrld.characters_at(loc[0] + dx, loc[1] + dy):
+                                    list_of_N.append((loc[0] + dx, loc[1] + dy))
+                                    break
                             if wrld.empty_at(loc[0] + dx, loc[1] + dy):
                                 list_of_N.append((loc[0] + dx, loc[1] + dy))
         return list_of_N
@@ -154,18 +222,26 @@ class TestCharacter(CharacterEntity):
     #Will return either safe or not safe
     def evaluateState(self, wrld):
         #print(wrld.monsters)
+        try:
+            chara = next(iter(wrld.characters.values()))
+            character = chara[0]
+        except (IndexError, StopIteration):
+            return state.DEAD
         m = next(iter(wrld.monsters.values()))[0]
-        monster_came_from, monster_cost_so_far = self.AStar(wrld, (self.x, self.y), (m.x, m.y), [obstacles.MONSTER])
+        loc = (character.x, character.y)
+        mloc = (m.x, m.y)
+        monster_came_from, monster_cost_so_far = self.AStar(wrld, loc, mloc, [obstacles.MONSTER, obstacles.PLAYER])
         #print(monster_came_from)
         #print(monster_cost_so_far)
         counter = 0
-        path = (m.x, m.y)
-        while path != (self.x, self.y):
+        path = mloc
+        while path != loc:
             path = monster_came_from[path]
-            #print(path)
-            if path == (self.x, self.y):
+            # print(path)
+            if path == loc:
                 break
             counter += 1
+        print(counter)
         if counter <= 4:
             return state.UNSAFE
         return state.SAFE
@@ -174,6 +250,7 @@ class TestCharacter(CharacterEntity):
 class state(Enum):
     SAFE = 1
     UNSAFE = 2
+    DEAD = 3
 
 class obstacles(Enum):
     EXIT = 1
@@ -181,3 +258,4 @@ class obstacles(Enum):
     WALL = 3
     BOMB = 4
     EXPLOSION = 5
+    PLAYER = 6
