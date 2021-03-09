@@ -8,7 +8,7 @@ sys.path.insert(0, '../bomberman')
 from entity import CharacterEntity
 from colorama import Fore, Back
 from queue import PriorityQueue
-
+import numpy as np
 
 import random
 import math
@@ -16,15 +16,14 @@ from enum import Enum
 
 class TestCharacter(CharacterEntity):
 
+    depth = 4
+
     def do(self, wrld):
         # Your code here
         #m1 = random.randint(-1, 1)
         #m2 = random.randint(0, 1)
         #self.move(m1, m2)
         loc = (self.x, self.y)
-        m = next(iter(wrld.monsters.values()))
-        monster = (m[0].x, m[0].y)
-        exitBlock = (7, 18)
         #print(wrld.empty_at(goal[0], goal[1]))
         characterState = self.evaluateState(wrld)
         # do expectimax
@@ -36,7 +35,7 @@ class TestCharacter(CharacterEntity):
             self.move(next_move[0], next_move[1])
 
         if characterState == state.SAFE:
-            came_from, cost_so_far = self.AStar(wrld, loc, exitBlock, [obstacles.EXIT])
+            came_from, cost_so_far = self.AStar(wrld, loc, wrld.exitcell, [obstacles.EXIT])
             #print(came_from)
             #print(cost_so_far)
             #next_position = list(came_from.keys())[list(came_from.values()).index(loc)]
@@ -47,7 +46,7 @@ class TestCharacter(CharacterEntity):
             #    self.set_cell_color(move[0], move[1], Fore.RED + Back.GREEN)
             #print(self.getNeighbors(loc, wrld))
             #self.move(next_move[0], next_move[1])
-            path = exitBlock
+            path = wrld.exitcell
             next_m = (0, 0)
             while path != loc:
                 temp = path
@@ -64,7 +63,7 @@ class TestCharacter(CharacterEntity):
 
     # Also passes up our action
     def maxvalue(self, wrld, curr, d):
-        if self.evaluateState(wrld) == state.SAFE or d == 4:
+        if self.evaluateState(wrld) == state.SAFE or d == self.depth:
             print("maxvalue")
             return self.utility(wrld), curr
         if self.evaluateState(wrld) == state.DEAD:
@@ -87,9 +86,9 @@ class TestCharacter(CharacterEntity):
 
     # Probably will need to call expvalue on multiple monsters but that will be handled in maxvalue
     def expvalue(self, wrld, act, d):
-        if self.evaluateState(wrld) == state.SAFE or d == 4:
+        if self.evaluateState(wrld) == state.SAFE or d == self.depth:
             print("expvalue" )
-            return self.monster_utility(wrld)
+            return self.utility(wrld)
         v = 0
         mcurr = next(iter(wrld.monsters.values()))[0]
         possible_moves = self.getNeighbors((mcurr.x, mcurr.y), wrld, [obstacles.PLAYER])
@@ -134,7 +133,7 @@ class TestCharacter(CharacterEntity):
             if path == loc:
                 break
             counter += 1
-        return counter * 2
+        return counter
 
     def monster_utility(self, wrld):
         try:
@@ -181,9 +180,10 @@ class TestCharacter(CharacterEntity):
 
 
     def calculateH(self, loc1, loc2):
-        (x1, y1) = loc1
-        (x2, y2) = loc2
-        return abs(x1 - x2) + abs(y1 - y2)
+        #(x1, y1) = loc1
+        #(x2, y2) = loc2
+        #return abs(x1 - x2) + abs(y1 - y2)
+        return math.sqrt(((loc1[0] - loc2[0]) ** 2) + ((loc1[1] - loc2[1]) ** 2))
 
     def calculateD(self, loc1, loc2):
         (x1, y1) = loc1
