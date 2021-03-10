@@ -25,14 +25,18 @@ class TestCharacter(CharacterEntity):
         #self.move(m1, m2)
         loc = (self.x, self.y)
         #print(wrld.empty_at(goal[0], goal[1]))
-        characterState = self.evaluateState(wrld)
+        wrldState = self.evaluateState(wrld)
+        characterState = wrldState[0]
         # do expectimax
         if characterState == state.UNSAFE:
-            v, action = self.maxvalue(wrld, loc, 0)
-            print(action)
-            next_move = self.calculateD(loc, action)
-            print(next_move)
-            self.move(next_move[0], next_move[1])
+            #use wrldState[1] to get monster list
+            #stupid monster name
+            if wrldState[1][0] == 'stupid':
+                v, action = self.maxvalue(wrld, loc, 0)
+                print(action)
+                next_move = self.calculateD(loc, action)
+                print(next_move)
+                self.move(next_move[0], next_move[1])
 
         if characterState == state.SAFE:
             came_from, cost_so_far = self.AStar(wrld, loc, wrld.exitcell, [obstacles.EXIT])
@@ -63,10 +67,10 @@ class TestCharacter(CharacterEntity):
 
     # Also passes up our action
     def maxvalue(self, wrld, curr, d):
-        if self.evaluateState(wrld) == state.SAFE or d == self.depth:
+        if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
             print("maxvalue")
             return self.utility(wrld), curr
-        if self.evaluateState(wrld) == state.DEAD:
+        if self.evaluateState(wrld)[0] == state.DEAD:
             return -10000, curr
         v = -math.inf
         action = (0, 0)
@@ -86,7 +90,7 @@ class TestCharacter(CharacterEntity):
 
     # Probably will need to call expvalue on multiple monsters but that will be handled in maxvalue
     def expvalue(self, wrld, act, d):
-        if self.evaluateState(wrld) == state.SAFE or d == self.depth:
+        if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
             print("expvalue" )
             return self.utility(wrld)
         v = 0
@@ -226,25 +230,43 @@ class TestCharacter(CharacterEntity):
             chara = next(iter(wrld.characters.values()))
             character = chara[0]
         except (IndexError, StopIteration):
-            return state.DEAD
-        m = next(iter(wrld.monsters.values()))[0]
+            return state.DEAD, []
+        try:
+            monsters = list(wrld.monsters.values())
+        except (StopIteration):
+            pass
+
         loc = (character.x, character.y)
-        mloc = (m.x, m.y)
-        monster_came_from, monster_cost_so_far = self.AStar(wrld, loc, mloc, [obstacles.MONSTER, obstacles.PLAYER])
-        #print(monster_came_from)
-        #print(monster_cost_so_far)
-        counter = 0
-        path = mloc
-        while path != loc:
-            path = monster_came_from[path]
-            # print(path)
-            if path == loc:
-                break
-            counter += 1
-        print(counter)
-        if counter <= 4:
-            return state.UNSAFE
-        return state.SAFE
+        counters = {}
+        #print(monsters)
+        for monster in monsters:
+            m = monster[0]
+            #print(monster)
+            monsterType = m.name
+            mloc = (m.x, m.y)
+            monster_came_from, monster_cost_so_far = self.AStar(wrld, loc, mloc, [obstacles.MONSTER, obstacles.PLAYER])
+            #print(monster_came_from)
+            #print(monster_cost_so_far)
+            counter = 0
+            path = mloc
+            while path != loc:
+                path = monster_came_from[path]
+                # print(path)
+                if path == loc:
+                    break
+                counter += 1
+            counters[monsterType] = counter
+        counts = [(k, v) for k, v in counters.items() if v <= 40]
+        flag = False
+        monsterTypes = []
+        for count in counts:
+            if count[1] <= 4:
+                flag = True
+                monsterTypes.append(count[0])
+        if flag:
+            #print(counts)
+            return state.UNSAFE, monsterTypes
+        return state.SAFE, []
 
 
 class state(Enum):
