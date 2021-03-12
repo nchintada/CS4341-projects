@@ -16,7 +16,7 @@ from enum import Enum
 
 class TestCharacter(CharacterEntity):
 
-    depth = 4
+    depth = 3
 
     def do(self, wrld):
         # Your code here
@@ -33,9 +33,9 @@ class TestCharacter(CharacterEntity):
             #stupid monster name
             if wrldState[1][0] == 'stupid':
                 v, action = self.maxvalue(wrld, loc, 0)
-                print(action)
+                #print(action)
                 next_move = self.calculateD(loc, action)
-                print(next_move)
+                #print(next_move)
                 self.move(next_move[0], next_move[1])
 
         if characterState == state.SAFE:
@@ -68,7 +68,7 @@ class TestCharacter(CharacterEntity):
     # Also passes up our action
     def maxvalue(self, wrld, curr, d):
         if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
-            print("maxvalue")
+            #print("maxvalue")
             return self.utility(wrld, 'stupid'), curr
         if self.evaluateState(wrld)[0] == state.DEAD:
             return -10000, curr
@@ -79,7 +79,7 @@ class TestCharacter(CharacterEntity):
             newWrld = SensedWorld.from_world(wrld)
             character = next(iter(newWrld.characters.values()))[0]
             new_move = self.calculateD((character.x, character.y), (a[0], a[1]))
-            print(new_move[0], new_move[1])
+            #print(new_move[0], new_move[1])
             character.move(new_move[0], new_move[1])
             newerWrld = newWrld.next()[0]
             val = self.expvalue(newerWrld, a, d + 1)
@@ -91,7 +91,7 @@ class TestCharacter(CharacterEntity):
     # Probably will need to call expvalue on multiple monsters but that will be handled in maxvalue
     def expvalue(self, wrld, act, d):
         if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
-            print("expvalue" )
+            #print("expvalue" )
             return self.utility(wrld, 'stupid')
         v = 0
         mcurr = self.getMonster(wrld, 'stupid')
@@ -105,11 +105,11 @@ class TestCharacter(CharacterEntity):
             monster = self.getMonster(newWrld, 'stupid')
             new_move = self.calculateD((monster.x, monster.y), (a[0], a[1]))
             monster.move(new_move[0], new_move[1])
-            print("Monster position before" + str(monster.x) + ' ' + str(monster.y))
+            #print("Monster position before" + str(monster.x) + ' ' + str(monster.y))
             newerWrld = newWrld.next()[0]
             monster = self.getMonster(newerWrld, 'stupid')
-            print("Monster position after" + str(monster.x) + ' ' + str(monster.y))
-            print("expvalue for loop")
+            #print("Monster position after" + str(monster.x) + ' ' + str(monster.y))
+            #print("expvalue for loop")
             value = self.maxvalue(newerWrld, act, d+1)[0]
             v = v + p*value
         return v
@@ -121,7 +121,10 @@ class TestCharacter(CharacterEntity):
 
 
     def utility(self, wrld, name):
-        return self.monster_utility(wrld, name) - self.exit_utility(wrld)
+        wrld.printit()
+        print(-1/(1 + self.monster_utility(wrld, name)))
+        print(-self.exit_utility(wrld))
+        return -1/(1 + self.monster_utility(wrld, name)) - self.exit_utility(wrld)
 
     def exit_utility(self, wrld):
         try:
@@ -137,9 +140,9 @@ class TestCharacter(CharacterEntity):
         while path != loc:
             path = exit_came_from[path]
             # print(path)
-            if path == loc:
-                break
             counter += 1
+        if counter == 0:
+            return -10000
         return counter
 
     def monster_utility(self, wrld, name):
@@ -157,9 +160,9 @@ class TestCharacter(CharacterEntity):
         while path != loc:
             path = monster_came_from[path]
             # print(path)
-            if path == loc:
-                break
             counter += 1
+        #if counter == 0:
+        #    return 20
         return counter
 
     def AStar(self, wrld, start, goal, list_of_e):
@@ -212,15 +215,12 @@ class TestCharacter(CharacterEntity):
                             if obstacles.EXIT in list_of_e:
                                 if wrld.exit_at(loc[0] + dx, loc[1] + dy):
                                     list_of_N.append((loc[0] + dx, loc[1] + dy))
-                                    break
                             if obstacles.MONSTER in list_of_e:
                                 if wrld.monsters_at(loc[0] + dx, loc[1] + dy):
                                     list_of_N.append((loc[0] + dx, loc[1] + dy))
-                                    break
                             if obstacles.PLAYER in list_of_e:
                                 if wrld.characters_at(loc[0] + dx, loc[1] + dy):
                                     list_of_N.append((loc[0] + dx, loc[1] + dy))
-                                    break
                             if wrld.empty_at(loc[0] + dx, loc[1] + dy):
                                 list_of_N.append((loc[0] + dx, loc[1] + dy))
         return list_of_N
@@ -229,6 +229,7 @@ class TestCharacter(CharacterEntity):
     #Will return either safe or not safe
     def evaluateState(self, wrld):
         #print(wrld.monsters)
+        monsters = []
         try:
             chara = next(iter(wrld.characters.values()))
             character = chara[0]
@@ -255,8 +256,6 @@ class TestCharacter(CharacterEntity):
             while path != loc:
                 path = monster_came_from[path]
                 # print(path)
-                if path == loc:
-                    break
                 counter += 1
             counters[monsterType] = counter
         counts = [(k, v) for k, v in counters.items() if v <= 40]
