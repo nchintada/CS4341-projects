@@ -94,7 +94,7 @@ class TestCharacter(CharacterEntity):
             print("expvalue" )
             return self.utility(wrld)
         v = 0
-        mcurr = next(iter(wrld.monsters.values()))[0]
+        mcurr = self.getMonster(wrld, 'stupid')
         possible_moves = self.getNeighbors((mcurr.x, mcurr.y), wrld, [obstacles.PLAYER])
         for a in possible_moves:
             p = 1.0/len(possible_moves)
@@ -102,19 +102,22 @@ class TestCharacter(CharacterEntity):
             # v←v+p·Max-value(Result(state,a))
             # print("What are we getting? " + )
             newWrld = SensedWorld.from_world(wrld)
-            monster = next(iter(newWrld.monsters.values()))[0]
+            monster = self.getMonster(newWrld, 'stupid')
             new_move = self.calculateD((monster.x, monster.y), (a[0], a[1]))
             monster.move(new_move[0], new_move[1])
             print("Monster position before" + str(monster.x) + ' ' + str(monster.y))
             newerWrld = newWrld.next()[0]
-            monster = next(iter(newerWrld.monsters.values()))[0]
+            monster = self.getMonster(newerWrld, 'stupid')
             print("Monster position after" + str(monster.x) + ' ' + str(monster.y))
             print("expvalue for loop")
             value = self.maxvalue(newerWrld, act, d+1)[0]
             v = v + p*value
         return v
 
-
+    def getMonster(self, wrld, name):
+        for monster in list(wrld.monsters.values()):
+            if monster[0].name == name:
+                return monster[0]
 
 
     def utility(self, wrld):
