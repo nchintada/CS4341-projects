@@ -69,7 +69,7 @@ class TestCharacter(CharacterEntity):
     def maxvalue(self, wrld, curr, d):
         if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
             print("maxvalue")
-            return self.utility(wrld), curr
+            return self.utility(wrld, 'stupid'), curr
         if self.evaluateState(wrld)[0] == state.DEAD:
             return -10000, curr
         v = -math.inf
@@ -92,7 +92,7 @@ class TestCharacter(CharacterEntity):
     def expvalue(self, wrld, act, d):
         if self.evaluateState(wrld)[0] == state.SAFE or d == self.depth:
             print("expvalue" )
-            return self.utility(wrld)
+            return self.utility(wrld, 'stupid')
         v = 0
         mcurr = self.getMonster(wrld, 'stupid')
         possible_moves = self.getNeighbors((mcurr.x, mcurr.y), wrld, [obstacles.PLAYER])
@@ -120,8 +120,8 @@ class TestCharacter(CharacterEntity):
                 return monster[0]
 
 
-    def utility(self, wrld):
-        return self.monster_utility(wrld) - self.exit_utility(wrld)
+    def utility(self, wrld, name):
+        return self.monster_utility(wrld, name) - self.exit_utility(wrld)
 
     def exit_utility(self, wrld):
         try:
@@ -142,13 +142,13 @@ class TestCharacter(CharacterEntity):
             counter += 1
         return counter
 
-    def monster_utility(self, wrld):
+    def monster_utility(self, wrld, name):
         try:
             chara = next(iter(wrld.characters.values()))
             character = chara[0]
         except (IndexError, StopIteration):
             return 0
-        m = next(iter(wrld.monsters.values()))[0]
+        m = self.getMonster(wrld, name)
         loc = (character.x, character.y)
         mloc = (m.x, m.y)
         monster_came_from, monster_cost_so_far = self.AStar(wrld, loc, mloc, [obstacles.MONSTER, obstacles.PLAYER])
